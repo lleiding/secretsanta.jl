@@ -33,25 +33,26 @@ function getsecretsanta(names, pairs)
 end
 
 """
-    mailsecretsanta(t)
+    mailsecretsanta(t, a)
 
-Notifies participants via e-mail using information in table t.
+Notifies participants via e-mail using information in table `t`.
+This requires a set-up msmtp. Choose your prefered mail account `a`
 """
-function mailsecretsanta(table)
+function mailsecretsanta(table, mailaccount = "default")
     if length(size(table)) > 1
         for i in 1:size(table, 1)
             name = table.Name[i]
             mail = table.Address[i]
             santa = table.Santa[i]
             message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n"
-            print(pipeline(`echo $message`, `msmtp -a gmx $mail`))
+            run(pipeline(`echo $message`, `msmtp -a $mailaccount $mail`))
         end
     else
         name = table.Name
         mail = table.Address
         santa = table.Santa
         message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n"
-        run(pipeline(`echo $message`, `msmtp -a gmx $mail`))
+        run(pipeline(`echo $message`, `msmtp -a $mailaccount $mail`))
     end        
 end
 
@@ -60,10 +61,10 @@ end
 
 Runs the secret santa script.
 """
-function runsecretsanta(filename)
+function runsecretsanta(filename, mailaccount)
     table = readtable(filename)
     table.Santa = getsecretsanta(table[:,1], table[:,2])
-    mailsecretsanta(table)
+    mailsecretsanta(table, mailaccount)
 end
 
-runsecretsanta(ARGS[1])
+runsecretsanta(ARGS[1], ARGS[2])
