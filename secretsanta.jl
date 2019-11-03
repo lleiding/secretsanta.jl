@@ -1,5 +1,13 @@
 #!/usr/bin/env julia
 
+# A sript to draw for secret santa and send pairings via e-mail using msmtp.
+
+# Usage: julia secretsanta.jl <table> [<mail account>]
+
+# <table> is a csv table with columns "Name", "Pair", and "Address".
+# Use the "Pair" columns to prevent drawing, e.g, partners names by assigning
+# partners an identical id.
+
 using Random
 using CSV
 
@@ -36,7 +44,7 @@ end
     mailsecretsanta(t, a)
 
 Notifies participants via e-mail using information in table `t`.
-This requires a set-up msmtp. Choose your prefered mail account `a`
+This requires a set-up msmtp. Choose your prefered mail account `a`.
 """
 function mailsecretsanta(table, mailaccount = "default")
     if length(size(table)) > 1
@@ -44,7 +52,7 @@ function mailsecretsanta(table, mailaccount = "default")
             name = table.Name[i]
             mail = table.Address[i]
             santa = table.Santa[i]
-            message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n"
+            message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n\r\nBesuch mich auf https://github.com/lleiding/secretsanta.jl\r\n"
             run(pipeline(`echo $message`, `msmtp -a $mailaccount $mail`))
         end
     else
@@ -57,9 +65,10 @@ function mailsecretsanta(table, mailaccount = "default")
 end
 
 """
-    runsecretsanta()
+    runsecretsanta(f, a)
 
-Runs the secret santa script.
+Runs the secret santa script using information in file `f`.
+Mailing requires a set-up msmtp. Choose your prefered mail account `a`.
 """
 function runsecretsanta(filename, mailaccount)
     table = readtable(filename)
