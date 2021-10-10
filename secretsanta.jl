@@ -10,6 +10,7 @@
 
 using Random
 using CSV
+using Dates
 
 """
     readtable(f)
@@ -52,14 +53,14 @@ function mailsecretsanta(table, mailaccount = "default")
             name = table.Name[i]
             mail = table.Address[i]
             santa = table.Santa[i]
-            message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n\r\nBesuch mich auf https://github.com/lleiding/secretsanta.jl\r\n"
+            message = "To: $mail\r\nSubject: Weihnachtswichteln $(Dates.year(Dates.today()))\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n\r\nBesuch mich auf https://github.com/lleiding/secretsanta.jl\r\n"
             run(pipeline(`echo $message`, `msmtp -a $mailaccount $mail`))
         end
     else
         name = table.Name
         mail = table.Address
         santa = table.Santa
-        message = "To: $mail\r\nSubject: Weihnachtswichteln 2019\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n"
+        message = "To: $mail\r\nSubject: Weihnachtswichteln $(Dates.year(Dates.today()))\r\n\r\nHallo $name,\r\n\r\nDu darfst heuer $santa bewichteln.\r\n\r\nLG\r\nDein Weihnachtswichtelskript\r\n"
         run(pipeline(`echo $message`, `msmtp -a $mailaccount $mail`))
     end        
 end
